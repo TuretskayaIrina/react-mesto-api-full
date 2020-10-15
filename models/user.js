@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -23,6 +25,22 @@ const userSchema = new mongoose.Schema({
       message: (props) => `${props.value} is not a valid URL!`,
     },
   },
+  email: {
+    type: String, // тип данныйх - строка
+    required: true, // поле обязательно для заполнения
+    unique: true, // уникальное значение
+    validate: { // валидация email
+      validator(email) {
+        return validator.isEmail(email);
+      },
+      message: (props) => `${props.value} is not a valid email!`,
+    },
+  },
+  password: {
+    type: String, // тип данныйх - строка
+    required: true, // поле обязательно для заполнения
+    minlength: 10, // минимальная длина - 10 символов
+  }
 });
 
 module.exports = mongoose.model('user', userSchema);

@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 // возвращает всех пользователей
@@ -43,7 +44,7 @@ const getUsersById = (req, res) => {
 };
 
 // создаёт пользователя
-const postUser = (req, res) => {
+const createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
   bcrypt.hash(req.body.password, 10)
     .then(hash => User.create({
@@ -73,8 +74,27 @@ const postUser = (req, res) => {
     });
 };
 
+// аунтификация
+const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      // создадим токен
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {expiresIn: '7d'});
+
+      // вернём токен
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
+};
+
 module.exports = {
   getAllUsers,
   getUsersById,
-  postUser,
+  createUser,
+  login,
 };

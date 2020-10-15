@@ -1,11 +1,12 @@
 const express = require('express');
-// подключаем БД
 const mongoose = require('mongoose');
-
 const bodyParser = require('body-parser');
 
 const getCards = require('./routes/cards');
 const getUsers = require('./routes/users');
+
+const { login } = require('./controllers/users');
+const { createUser } = require('./controllers/users');
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb', {
@@ -33,6 +34,9 @@ app.use((req, res, next) => {
 
 app.use('/', getCards);
 app.use('/', getUsers);
+
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use((req, res) => {
   res

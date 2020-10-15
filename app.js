@@ -7,6 +7,7 @@ const getUsers = require('./routes/users');
 
 const { login } = require('./controllers/users');
 const { createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb', {
@@ -24,19 +25,13 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// временная реализация идентификации пользователя
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5f676acd2fa3588da69bb035',
-  };
-  next();
-});
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(auth); // защищаем все ниже перечисленные роуты авторизацией
 
 app.use('/', getCards);
 app.use('/', getUsers);
-
-app.post('/signin', login);
-app.post('/signup', createUser);
 
 app.use((req, res) => {
   res

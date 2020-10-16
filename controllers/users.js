@@ -1,50 +1,33 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const ValidationError = require('../errors/Validation-error');
+const NotFoundError = require('../errors/not-found-err');
 
-// возвращает всех пользователей
-const getAllUsers = (req, res) => User.find({})
-  .then((users) => {
-    res
-      .status(200)
-      .send((users));
-  })
-  .catch((err) => {
-    console.log(err);
-    return res
-      .status(500)
-      .send({ message: 'На сервере произошла ошибка.' });
-  });
+// вернуть всех пользователей
+const getAllUsers = (req, res, next) => {
+  User.find({})
+    .then((users) => {
+      return res.send({ data: users });
+    })
+    .catch(next);
+}
 
-// возвращает пользователя по _id
-const getUsersById = (req, res) => {
+// вернуть пользователя по _id
+const getUsersById = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (user === null || undefined) {
-        return res
-          .status(404)
-          .send({ message: 'Нет пользователя с таким id' });
+        throw new NotFoundError('Нет пользователя с таким id');
       }
 
-      return res
-        .status(200)
-        .send({ data: user });
+      return res.send({ data: user });
     })
-    .catch((err) => {
-      console.log(err);
-      if (err.name === 'DocumentNotFoundError') {
-        return res
-          .status(404)
-          .send({ message: 'Нет пользователя с таким id' });
-      }
-      return res
-        .status(500)
-        .send({ message: 'На сервере произошла ошибка.' });
-    });
+    .catch(next);
 };
 
-// создаёт пользователя
-const createUser = (req, res) => {
+// создать пользователя
+const createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
@@ -56,39 +39,68 @@ const createUser = (req, res) => {
     }))
 
     .then((user) => {
-      res
-        .status(200)
-        .send((user));
+      return res.send((user));
     })
 
     .catch((err) => {
-      console.log(err);
       if (err.name === 'ValidationError') {
-        return res
-          .status(400)
-          .send({ message: 'Ошибка валидации. Некорректные данные.' });
+        next(new ValidationError(err.message));
+      } else if (err.name === 'MongoError' && err.code === 11000) {
+        const err = new Error('Пользователь с таким email уже зарегистрирован');
+        err.statusCode = 409;
+        next(err);
       }
-      return res
-        .status(500)
-        .send({ message: 'На сервере произошла ошибка.' });
+      next(err);
     });
 };
 
 // аунтификация
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // создадим токен
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', {expiresIn: '7d'});
-
       // вернём токен
       res.send({ token });
     })
+    .catch(next);
+};
+
+// обновить пользователя
+const updateUser = (req, res, next) =>{
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
+    new: true,
+    runValidators: true,
+  })
+    .then((user) => {
+      return res.send((user));
+    })
     .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
+      if (err.name === 'ValidationError') {
+        next(new ValidationError(err.message));
+      }
+      next(err);
+    });
+};
+
+// обновить аватар
+const updateAvatr = (req, res, next) =>{
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
+    new: true,
+    runValidators: true,
+  })
+    .then((user) => {
+      return res.send((user));
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError(err.message));
+      }
+      next(err);
     });
 };
 
@@ -96,5 +108,7 @@ module.exports = {
   getAllUsers,
   getUsersById,
   createUser,
+  updateUser,
+  updateAvatr,
   login,
 };

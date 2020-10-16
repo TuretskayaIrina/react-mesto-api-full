@@ -8,10 +8,10 @@ const NotFoundError = require('../errors/not-found-err');
 const getAllUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
-      return res.send({ data: users });
+      res.send({ data: users });
     })
     .catch(next);
-}
+};
 
 // вернуть пользователя по _id
 const getUsersById = (req, res, next) => {
@@ -20,7 +20,6 @@ const getUsersById = (req, res, next) => {
       if (user === null || undefined) {
         throw new NotFoundError('Нет пользователя с таким id');
       }
-
       return res.send({ data: user });
     })
     .catch(next);
@@ -28,7 +27,10 @@ const getUsersById = (req, res, next) => {
 
 // создать пользователя
 const createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    // eslint-disable-next-line no-unused-vars
+    name, about, avatar, email, password,
+  } = req.body;
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name,
@@ -39,15 +41,15 @@ const createUser = (req, res, next) => {
     }))
 
     .then((user) => {
-      return res.send((user));
+      res.send((user));
     })
 
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError(err.message));
       } else if (err.name === 'MongoError' && err.code === 11000) {
-        const err = new Error('Пользователь с таким email уже зарегистрирован');
-        err.statusCode = 409;
+        const error = new Error('Пользователь с таким email уже зарегистрирован');
+        error.statusCode = 409;
         next(err);
       }
       next(err);
@@ -61,7 +63,7 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // создадим токен
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {expiresIn: '7d'});
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       // вернём токен
       res.send({ token });
     })
@@ -69,14 +71,14 @@ const login = (req, res, next) => {
 };
 
 // обновить пользователя
-const updateUser = (req, res, next) =>{
+const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
     runValidators: true,
   })
     .then((user) => {
-      return res.send((user));
+      res.send((user));
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -87,14 +89,14 @@ const updateUser = (req, res, next) =>{
 };
 
 // обновить аватар
-const updateAvatr = (req, res, next) =>{
+const updateAvatr = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
     runValidators: true,
   })
     .then((user) => {
-      return res.send((user));
+      res.send((user));
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {

@@ -6,7 +6,7 @@ const ForbiddenError = require('../errors/forbidden-error');
 // возвращает все карточки
 const getAllCards = (req, res, next) => Card.find({})
   .then((cards) => {
-    return res.send((cards));
+    res.send((cards));
   })
   .catch(next);
 
@@ -15,7 +15,7 @@ const postCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      return res.send((card));
+      res.send((card));
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -49,32 +49,31 @@ const addLike = (req, res, next) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-  .then((data) => {
-    if (data === null || undefined) {
-      throw new NotFoundError('Нет карточки с таким id');
-    }
-
-    return res.send((data));
-  })
-  .catch(next);
-}
+    .then((data) => {
+      if (data === null || undefined) {
+        throw new NotFoundError('Нет карточки с таким id');
+      }
+      res.send((data));
+    })
+    .catch(next);
+};
 
 // убрать лайк с карточки
 const deleteLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true }
+    { new: true },
   )
-  .then((data) => {
-    if (data === null || undefined) {
-      throw new NotFoundError('Нет карточки с таким id');
-    }
+    .then((data) => {
+      if (data === null || undefined) {
+        throw new NotFoundError('Нет карточки с таким id');
+      }
 
-    return res.send((data));
-  })
-  .catch(next);
-}
+      res.send((data));
+    })
+    .catch(next);
+};
 
 module.exports = {
   getAllCards,

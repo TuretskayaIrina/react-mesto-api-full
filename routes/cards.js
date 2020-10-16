@@ -7,7 +7,7 @@ const { deleteLike } = require('../controllers/cards');
 
 router.get('/cards', getAllCards); // получить все карточки
 router.post('/cards', postCard); // создать карточку
-router.delete('/cards/:id', deleteCard); // удолить карточку
+router.delete('/cards/:id', deleteCard); // удалить карточку
 router.put('/cards/:cardId/likes', addLike); // добавить лайк
 router.delete('/cards/:cardId/likes', deleteLike); // удалить лайк
 

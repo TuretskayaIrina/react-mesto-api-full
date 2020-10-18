@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const getCards = require('./routes/cards');
 const getUsers = require('./routes/users');
@@ -27,6 +28,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(requestLogger); // логгер запросов
+
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
@@ -48,6 +51,8 @@ app.use(auth); // защищаем все ниже перечисленные р
 
 app.use('/', getCards);
 app.use('/', getUsers);
+
+app.use(errorLogger); // логгер ошибок
 
 app.use(errors()); // обработчик ошибок celebrate
 

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const ValidationError = require('../errors/Validation-error');
 const NotFoundError = require('../errors/not-found-err');
+const ConflictError = require('../errors/conflict-error');
 
 // вернуть всех пользователей
 const getAllUsers = (req, res, next) => {
@@ -32,6 +33,7 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   bcrypt.hash(req.body.password, 10)
+
     .then((hash) => User.create({
       name,
       about,
@@ -40,20 +42,18 @@ const createUser = (req, res, next) => {
       password: hash,
     }))
 
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new ValidationError('Заполните все поля: name, about, avatar, email, password');
+      } else if (err.name === 'MongoError' || err.code === 11000) {
+        throw new ConflictError('Пользователь с таким email уже зарегистрирован');
+      }
+    })
     .then((user) => {
       res.send((user));
     })
 
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError(err.message));
-      } else if (err.name === 'MongoError' && err.code === 11000) {
-        const error = new Error('Пользователь с таким email уже зарегистрирован');
-        error.statusCode = 409;
-        next(err);
-      }
-      next(err);
-    });
+    .catch(next);
 };
 
 // аунтификация
@@ -82,7 +82,7 @@ const updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError(err.message));
+        throw new ValidationError('Ошибка валидации');
       }
       next(err);
     });
@@ -100,7 +100,7 @@ const updateAvatr = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError(err.message));
+        throw new ValidationError('Ошибка валидации');
       }
       next(err);
     });

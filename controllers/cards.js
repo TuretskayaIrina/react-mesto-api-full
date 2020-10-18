@@ -19,7 +19,7 @@ const postCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError(err.message));
+        throw new ValidationError('Ошибка валидации. Некорректные данные.');
       }
       next(err);
     });
@@ -27,17 +27,24 @@ const postCard = (req, res, next) => {
 
 // удаляет карточку по id
 const deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId)
-    .catch(() => {
-      throw new NotFoundError('Нет карточки с таким id');
-    })
+  Card.findByIdAndRemove(req.params.id)
     .then((card) => {
-      if (card.owner.toString() !== req.user._id) {
-        throw new ForbiddenError({ message: 'Недостаточно прав' });
+      if (card === null || undefined) {
+        throw new NotFoundError(`Карточка с id ${req.params.id} не существует`);
       }
-      Card.findByIdAndDelete(req.params.cardId)
-        .then(() => res.send({ message: 'Delete' }))
-        .catch(next);
+
+      if (card.owner.toString() !== req.user._id) {
+        throw new ForbiddenError('Недостаточно прав');
+      }
+
+      return res
+        .status(200)
+        .send({ message: 'Карточка удалена' });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new ValidationError('Ошибка валидации. Некорректные данные.');
+      }
     })
     .catch(next);
 };

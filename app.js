@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
 
 const getCards = require('./routes/cards');
 const getUsers = require('./routes/users');
@@ -25,13 +27,29 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6).max(30),
+  }),
+}), login);
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().required().pattern(/^((http|https):\/\/)(www\.)?([\w\W\d]{1,})(\.)([a-zA-Z]{1,10})([\w\W\d]{1,})?$/),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(10),
+  }),
+}), createUser);
 
 app.use(auth); // защищаем все ниже перечисленные роуты авторизацией
 
 app.use('/', getCards);
 app.use('/', getUsers);
+
+app.use(errors()); // обработчик ошибок celebrate
 
 // централизованная обработка ошибок
 // eslint-disable-next-line no-unused-vars

@@ -30,21 +30,21 @@ app.use(require('cors')());
 require('dotenv').config();
 
 // Массив разешённых доменов
-const allowedCors = [
-  'https://kusto.students.nomoreparties.xyz',
-  'http://kusto.students.nomoreparties.xyz',
-  'https://www.kusto.students.nomoreparties.xyz',
-  'http://www.kusto.students.nomoreparties.xyz',
-  'localhost:3000',
-];
+// const allowedCors = [
+//   'https://kusto.students.nomoreparties.xyz',
+//   'http://kusto.students.nomoreparties.xyz',
+//   'https://www.kusto.students.nomoreparties.xyz',
+//   'http://www.kusto.students.nomoreparties.xyz',
+//   'localhost:3000',
+// ];
 
-app.use((req, res, next) => {
-  const { origin } = req.headers;
-  if (allowedCors.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   const { origin } = req.headers;
+//   if (allowedCors.includes(origin)) {
+//     res.header('Access-Control-Allow-Origin', origin);
+//   }
+//   next();
+// });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -67,9 +67,6 @@ app.post('/signin', celebrate({
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().required().pattern(/^((http|https):\/\/)(www\.)?([\w\W\d]{1,})(\.)([a-zA-Z]{1,10})([\w\W\d]{1,})?$/),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(10),
   }),

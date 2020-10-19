@@ -11,6 +11,7 @@ const getUsers = require('./routes/users');
 const { login } = require('./controllers/users');
 const { createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+// eslint-disable-next-line import/no-unresolved
 require('dotenv').config();
 
 // подключаемся к серверу mongo
@@ -32,15 +33,14 @@ const allowedCors = [
   'http://kusto.students.nomoreparties.xyz',
   'https://www.kusto.students.nomoreparties.xyz',
   'http://www.kusto.students.nomoreparties.xyz',
-  'localhost:3000'
+  'localhost:3000',
 ];
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   const { origin } = req.headers;
   if (allowedCors.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
   }
-
   next();
 });
 

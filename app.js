@@ -25,6 +25,24 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
+// Массив разешённых доменов
+const allowedCors = [
+  'https://kusto.students.nomoreparties.xyz',
+  'http://kusto.students.nomoreparties.xyz',
+  'https://www.kusto.students.nomoreparties.xyz',
+  'http://www.kusto.students.nomoreparties.xyz',
+  'localhost:3000'
+];
+
+app.use(function(req, res, next) {
+  const { origin } = req.headers;
+  if (allowedCors.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
+  next();
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

@@ -46,9 +46,9 @@ const createUser = (req, res, next) => {
 
     // test
     .then((hash) => User.create({
-      name: 'Вася',
-      about: 'Текст для поля о пользователе',
-      avatar: 'https://icon-library.com/images/icon-avatars/icon-avatars-18.jpg',
+      name: name || 'Вася',
+      about: about || 'О Васе всякое',
+      avatar: avatar || 'https://icon-library.com/images/icon-avatars/icon-avatars-18.jpg',
       email,
       password: hash,
     }))

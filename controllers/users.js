@@ -36,22 +36,22 @@ const createUser = (req, res, next) => {
   } = req.body;
   bcrypt.hash(req.body.password, 10)
 
-    // .then((hash) => User.create({
-    //   name,
-    //   about,
-    //   avatar,
-    //   email,
-    //   password: hash,
-    // }))
-
-    // test
     .then((hash) => User.create({
-      name: name || 'Вася',
-      about: about || 'О Васе всякое',
-      avatar: avatar || 'https://icon-library.com/images/icon-avatars/icon-avatars-18.jpg',
+      name,
+      about,
+      avatar,
       email,
       password: hash,
     }))
+
+    // // test
+    // .then((hash) => User.create({
+    //   name: name || 'Вася',
+    //   about: about || 'О Васе всякое',
+    //   avatar: avatar || 'https://icon-library.com/images/icon-avatars/icon-avatars-18.jpg',
+    //   email,
+    //   password: hash,
+    // }))
 
     .catch((err) => {
       if (err.name === 'ValidationError') {

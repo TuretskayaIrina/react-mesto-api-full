@@ -4,6 +4,7 @@ const User = require('../models/user');
 const ValidationError = require('../errors/Validation-error');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-error');
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 // вернуть всех пользователей
 const getAllUsers = (req, res, next) => {
@@ -63,7 +64,11 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // создадим токен
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' }
+      );
       // вернём токен
       res.send({ token });
     })

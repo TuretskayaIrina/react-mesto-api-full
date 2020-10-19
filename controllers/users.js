@@ -4,6 +4,7 @@ const User = require('../models/user');
 const ValidationError = require('../errors/Validation-error');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-error');
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 // вернуть всех пользователей
@@ -35,10 +36,19 @@ const createUser = (req, res, next) => {
   } = req.body;
   bcrypt.hash(req.body.password, 10)
 
+    // .then((hash) => User.create({
+    //   name,
+    //   about,
+    //   avatar,
+    //   email,
+    //   password: hash,
+    // }))
+
+    // test
     .then((hash) => User.create({
-      name,
-      about,
-      avatar,
+      name: 'Вася',
+      about: 'Текст для поля о пользователе',
+      avatar: 'https://icon-library.com/images/icon-avatars/icon-avatars-18.jpg',
       email,
       password: hash,
     }))

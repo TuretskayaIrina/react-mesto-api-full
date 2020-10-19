@@ -11,8 +11,6 @@ const getUsers = require('./routes/users');
 const { login } = require('./controllers/users');
 const { createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-// eslint-disable-next-line import/no-unresolved
-require('dotenv').config();
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb', {
@@ -26,6 +24,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 const { PORT = 3000 } = process.env;
 
 const app = express();
+app.use(require('cors')());
+
+// eslint-disable-next-line import/no-unresolved
+require('dotenv').config();
 
 // Массив разешённых доменов
 const allowedCors = [

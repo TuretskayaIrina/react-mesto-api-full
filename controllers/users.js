@@ -11,19 +11,19 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 const getAllUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
-      res.send({ data: users });
+      res.status(200).send({ data: users });
     })
     .catch(next);
 };
 
 // вернуть пользователя по _id
 const getUsersById = (req, res, next) => {
-  User.findById(req.params.id)
+  User.findById(req.params.id === 'me' ? req.user : req.params.id)
     .then((user) => {
       if (user === null || undefined) {
         throw new NotFoundError('Нет пользователя с таким id');
       }
-      return res.send({ data: user });
+      return res.status(200).send({ data: user });
     })
     .catch(next);
 };
@@ -36,22 +36,22 @@ const createUser = (req, res, next) => {
   } = req.body;
   bcrypt.hash(req.body.password, 10)
 
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-
-    // // test
     // .then((hash) => User.create({
-    //   name: name || 'Вася',
-    //   about: about || 'О Васе всякое',
-    //   avatar: avatar || 'https://icon-library.com/images/icon-avatars/icon-avatars-18.jpg',
+    //   name,
+    //   about,
+    //   avatar,
     //   email,
     //   password: hash,
     // }))
+
+    // test
+    .then((hash) => User.create({
+      name: name || 'Вася',
+      about: about || 'О Васе всякое',
+      avatar: avatar || 'https://icon-library.com/images/icon-avatars/icon-avatars-18.jpg',
+      email,
+      password: hash,
+    }))
 
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -61,7 +61,7 @@ const createUser = (req, res, next) => {
       }
     })
     .then((user) => {
-      res.send((user));
+      res.status(200).send((user));
     })
 
     .catch(next);
@@ -80,7 +80,7 @@ const login = (req, res, next) => {
         { expiresIn: '7d' }
       );
       // вернём токен
-      res.send({ token });
+      res.status(200).send({ token });
     })
     .catch(next);
 };
@@ -93,7 +93,7 @@ const updateUser = (req, res, next) => {
     runValidators: true,
   })
     .then((user) => {
-      res.send((user));
+      res.status(200).send((user));
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -111,7 +111,7 @@ const updateAvatr = (req, res, next) => {
     runValidators: true,
   })
     .then((user) => {
-      res.send((user));
+      res.status(200).send((user));
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {

@@ -24,7 +24,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 const { PORT = 3000 } = process.env;
 
 const app = express();
-// app.use(require('cors')());
+app.use(require('cors')());
 
 // eslint-disable-next-line import/no-unresolved
 require('dotenv').config();

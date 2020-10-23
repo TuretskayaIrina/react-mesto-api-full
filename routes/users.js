@@ -10,9 +10,9 @@ const { updateAvatr } = require('../controllers/users');
 router.get('/users', getAllUsers);
 
 // вернуть пользователя по _id
-router.get('/users/:id', celebrate({
+router.get('/users/:userId', celebrate({
   body: Joi.object().keys({
-    _id: Joi.string().required(),
+    userId: Joi.string().alphanum().length(24),
   }),
 }), getUsersById);
 

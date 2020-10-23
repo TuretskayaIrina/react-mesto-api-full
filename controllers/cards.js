@@ -13,7 +13,8 @@ const getAllCards = (req, res, next) => Card.find({})
 // создаёт карточку
 const postCard = (req, res, next) => {
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id })
+  const { _id: userId } = req.user;
+  Card.create({ name, link, owner: userId })
     .then((card) => {
       res.send((card));
     })
@@ -27,10 +28,10 @@ const postCard = (req, res, next) => {
 
 // удаляет карточку по id
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (card === null || undefined) {
-        throw new NotFoundError(`Карточка с id ${req.params.id} не существует`);
+        throw new NotFoundError(`Карточка с id ${req.params.cardId} не существует`);
       }
 
       if (card.owner.toString() !== req.user._id) {

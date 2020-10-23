@@ -75,10 +75,9 @@ app.post('/signup', celebrate({
   }).unknown(true),
 }), createUser);
 
-app.use(auth); // защищаем все ниже перечисленные роуты авторизацией
-
-app.use('/', getCards);
-app.use('/', getUsers);
+// защищаем роуты авторизацией
+app.use('/cards', auth, getCards);
+app.use('/users', auth, getUsers);
 
 app.use(errorLogger); // логгер ошибок
 

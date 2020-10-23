@@ -29,23 +29,6 @@ app.use(require('cors')());
 // eslint-disable-next-line import/no-unresolved
 require('dotenv').config();
 
-// Массив разешённых доменов
-// const allowedCors = [
-//   'https://kusto.students.nomoreparties.xyz',
-//   'http://kusto.students.nomoreparties.xyz',
-//   'https://www.kusto.students.nomoreparties.xyz',
-//   'http://www.kusto.students.nomoreparties.xyz',
-//   'localhost:3000',
-// ];
-
-// app.use((req, res, next) => {
-//   const { origin } = req.headers;
-//   if (allowedCors.includes(origin)) {
-//     res.header('Access-Control-Allow-Origin', origin);
-//   }
-//   next();
-// });
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

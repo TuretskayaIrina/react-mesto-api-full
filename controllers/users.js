@@ -52,8 +52,11 @@ const createUser = (req, res, next) => {
         throw new ConflictError('Пользователь с таким email уже зарегистрирован');
       }
     })
+
     .then((user) => {
-      res.status(200).send((`${user.name}, поздравляю! Вы успешно зарегистрировались!`));
+      const newUser = user;
+      newUser.password = '';
+      res.send(newUser);
     })
 
     .catch(next);

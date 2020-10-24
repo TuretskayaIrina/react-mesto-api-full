@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const ValidationError = require('../errors/Validation-error');
-const NotFoundError = require('../errors/not-found-err');
+// const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-error');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
@@ -18,16 +18,12 @@ const getAllUsers = (req, res, next) => {
 
 // вернуть пользователя по _id
 const getUsersById = (req, res, next) => {
-  User.findById(req.user._id)
+  User.findById(req.params.id === 'me' ? req.user : req.params.id)
     .then((user) => {
       res.status(200).send({ data: user });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ValidationError('Ошибка валидации');
-      }
-      next(err);
-    });
+    .catch(new ValidationError('Ошибка валидации'))
+    .catch(next);
 };
 
 // создать пользователя

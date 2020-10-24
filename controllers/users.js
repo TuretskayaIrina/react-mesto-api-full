@@ -19,6 +19,7 @@ const getAllUsers = (req, res, next) => {
 // вернуть пользователя по _id
 const getUsersById = (req, res, next) => {
   User.findById(req.params.id === 'me' ? req.user : req.params.id)
+    .orFail(new ValidationError('Невалидный id'))
     .then((user) => {
       if (user === null || undefined) {
         throw new NotFoundError('Нет пользователя с таким id');
@@ -55,7 +56,7 @@ const createUser = (req, res, next) => {
       }
     })
     .then((user) => {
-      res.status(200).send((`${user.name}, поздравляю! Вы успешно зарегестрировались!`));
+      res.status(200).send((`${user.name}, поздравляю! Вы успешно зарегистрировались!`));
     })
 
     .catch(next);

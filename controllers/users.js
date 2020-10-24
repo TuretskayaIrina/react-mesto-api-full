@@ -28,7 +28,7 @@ const getAllUsers = (req, res, next) => {
 
 // test
 const getUsersById = (req, res, next) => {
-  User.findById(req.params._id === 'me' ? req.user : req.params._id)
+  User.findById(req.params._id)
     .orFail(new NotFoundError('Нет пользователя с таким id'))
     .then((user) => {
       res.status(200).send({ data: user });

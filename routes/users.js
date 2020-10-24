@@ -12,7 +12,7 @@ router.get('/users', getAllUsers);
 // вернуть пользователя по _id
 router.get('/users/:id', celebrate({
   body: Joi.object().keys({
-    _id: Joi.string().alphanum().length(24),
+    _id: Joi.string().hex(),
   }),
 }), getUsersById);
 

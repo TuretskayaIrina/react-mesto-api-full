@@ -31,15 +31,17 @@ const getUsersById = (req, res, next) => {
 // создать пользователя
 const createUser = (req, res, next) => {
   const {
-    // eslint-disable-next-line no-unused-vars
-    name, about, avatar, email, password,
+    name,
+    about,
+    avatar,
+    email,
+    password,
   } = req.body;
-  bcrypt.hash(req.body.password, 10)
+  bcrypt.hash(password, 10)
 
-    // test
     .then((hash) => User.create({
-      name: name || 'Вася',
-      about: about || 'О Васе всякое',
+      name: name || 'Имя',
+      about: about || 'О себе',
       avatar: avatar || 'https://icon-library.com/images/icon-avatars/icon-avatars-18.jpg',
       email,
       password: hash,
@@ -69,7 +71,7 @@ const login = (req, res, next) => {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' }
+        { expiresIn: '7d' },
       );
       // вернём токен
       res.status(200).send({ token });

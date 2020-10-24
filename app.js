@@ -54,7 +54,7 @@ app.post('/signup', celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(/^((http|https):\/\/)(www\.)?([\w\W\d]{1,})(\.)([a-zA-Z]{1,10})([\w\W\d]{1,})?$/),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(10),
+    password: Joi.string().min(10).required().pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$/),
   }).unknown(true),
 }), createUser);
 
@@ -84,5 +84,6 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
+  // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);
 });

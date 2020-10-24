@@ -17,18 +17,8 @@ const getAllUsers = (req, res, next) => {
 };
 
 // вернуть пользователя по _id
-// const getUsersById = (req, res, next) => {
-//   User.findById(req.params.id === 'me' ? req.user : req.params.id)
-//     .orFail(new NotFoundError('Нет пользователя с таким id'))
-//     .then((user) => {
-//       res.status(200).send({ data: user });
-//     })
-//     .catch(next);
-// };
-
-// test
 const getUsersById = (req, res, next) => {
-  User.findById(req.body._id)
+  User.findById(req.params.id === 'me' ? req.user : req.params.id)
     .orFail(new NotFoundError('Нет пользователя с таким id'))
     .then((user) => {
       res.status(200).send({ data: user });

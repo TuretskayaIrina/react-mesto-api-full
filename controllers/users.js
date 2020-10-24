@@ -18,7 +18,7 @@ const getAllUsers = (req, res, next) => {
 
 // вернуть пользователя по _id
 const getUsersById = (req, res, next) => {
-  User.findById(req.params.id === 'me' ? req.user : req.params.id)
+  User.findById(req.user._id)
     .then((user) => {
       res.status(200).send({ data: user });
     })

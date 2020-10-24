@@ -29,7 +29,7 @@ const postCard = (req, res, next) => {
 // удаляет карточку по id
 const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail(new ValidationError('Невалидный id'))
+    .orFail(new ValidationError('Ошибка валидации'))
     .then((card) => {
       if (card === null || undefined) {
         throw new NotFoundError(`Карточка с id ${req.params.cardId} не существует`);
@@ -58,7 +58,7 @@ const addLike = (req, res, next) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .orFail(new ValidationError('Невалидный id'))
+    .orFail(new ValidationError('Ошибка валидации'))
     .then((data) => {
       if (data === null || undefined) {
         throw new NotFoundError('Нет карточки с таким id');
@@ -75,7 +75,7 @@ const deleteLike = (req, res, next) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .orFail(new ValidationError('Невалидный id'))
+    .orFail(new ValidationError('Ошибка валидации'))
     .then((data) => {
       if (data === null || undefined) {
         throw new NotFoundError('Нет карточки с таким id');

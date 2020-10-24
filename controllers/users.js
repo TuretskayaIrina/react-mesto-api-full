@@ -55,7 +55,7 @@ const createUser = (req, res, next) => {
       }
     })
     .then((user) => {
-      res.status(200).send((user));
+      res.status(200).send((`${user.name}, поздравляю! Вы успешно зарегестрировались!`));
     })
 
     .catch(next);

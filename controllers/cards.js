@@ -28,25 +28,18 @@ const postCard = (req, res, next) => {
 
 // удаляет карточку по id
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
-      if (card === null || undefined) {
-        throw new NotFoundError(`Карточка с id ${req.params.cardId} не существует`);
-      }
+  Card.findById(req.params.cardId)
+    .orFail(new NotFoundError(`Карточка с id ${req.params.cardId} не существует`))
 
+    .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Недостаточно прав');
       }
 
-      return res
-        .status(200)
-        .send({ message: 'Карточка удалена' });
+      card.remove()
+        .then(() => res.status(200).send({ message: 'Карточка удалена' }));
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ValidationError('Ошибка валидации. Некорректные данные.');
-      }
-    })
+
     .catch(next);
 };
 

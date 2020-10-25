@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const ValidationError = require('../errors/Validation-error');
-// const NotFoundError = require('../errors/not-found-err');
+const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-error');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
@@ -20,9 +20,11 @@ const getAllUsers = (req, res, next) => {
 const getUsersById = (req, res, next) => {
   User.findById(req.params.id === 'me' ? req.user : req.params.id)
     .then((user) => {
-      res.status(200).send({ data: user });
+      if (user === null || undefined) {
+        throw new NotFoundError('Нет пользователя с таким id');
+      }
+      return res.status(200).send({ data: user });
     })
-    .catch(new ValidationError('Ошибка валидации'))
     .catch(next);
 };
 

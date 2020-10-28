@@ -1,10 +1,37 @@
-# react-mesto-api-full
-Репозиторий для полноценного API проекта Mesto, включающий авторизацию и регистрацию пользователей, операции с карточками и пользователями.  
+# Mesto (backend)
+___
 
 
-- [frontend](https://github.com/TuretskayaIrina/react-mesto-auth)
-- [REST API](https://api.cat.students.nomoreparties.space/) | 178.154.227.140
+This repository contains the backend for the Mesto project. Mesto is an application based on the social network Instagram.
 
-**Deploy**
+You can see the frontend part [here](https://github.com/TuretskayaIrina/react-mesto-auth)
+You can see the original version of the project in vanilla JS [here](https://github.com/TuretskayaIrina/mesto)
+### Tech
+___
 
-* [Регистрируйтесь, ставьте лайки =)](https://cat.students.nomoreparties.space/)
+* [Express](https://expressjs.com/)
+* [Mongo DB](https://www.mongodb.com/)
+
+### Installation
+___
+
+Mesto requires [Node.js](https://nodejs.org/) v13+ and * [Mongo DB](https://www.mongodb.com/) to run.
+
+Install the dependencies...
+```sh
+$ npm install 
+```
+and start app
+```sh
+$ npm run start
+```
+
+### REST API
+___
+
+[178.154.227.140](https://api.cat.students.nomoreparties.space/)
+
+### Deploy
+___
+
+[Register and put likes =)](https://cat.students.nomoreparties.space/)

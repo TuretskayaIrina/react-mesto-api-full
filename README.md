@@ -29,9 +29,9 @@ $ npm run start
 ### REST API
 ___
 
-[178.154.227.140](https://api.cat.students.nomoreparties.space/)
+[130.193.48.83](https://api.noinstagram.students.nomoreparties.xyz/)
 
 ### Deploy
 ___
 
-[Register and put likes =)](https://cat.students.nomoreparties.space/)
+[Register and put likes =)](https://noinstagram.students.nomoreparties.xyz/)

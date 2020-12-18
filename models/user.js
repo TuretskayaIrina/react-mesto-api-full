@@ -42,11 +42,11 @@ const userSchema = new mongoose.Schema({
     required: true, // поле обязательно для заполнения
     select: false, // свойство чтобы API не возвращал хеш пароля
     minlength: 10, // минимальная длина — 10 символов
-    validate: {
+    validate: { // валидация пароля
       validator(v) {
-        return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$/.test(v);
+        return /^\S+$/.test(v);
       },
-      message: (props) => `${props.value} is not valid password. Please include at least 1 uppercase character, 1 lowercase character, and 1 number.`,
+      message: (props) => `${props.value} Пароль должен быть без пробелов`,
     },
   },
 

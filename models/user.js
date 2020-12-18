@@ -42,6 +42,12 @@ const userSchema = new mongoose.Schema({
     required: true, // поле обязательно для заполнения
     minlength: 10, // минимальная длина - 10 символов
     select: false, // свойство чтобы API не возвращал хеш пароля
+    validate: { // валидация пароля
+      validator(v) {
+        return /^\S+$/.test(v);
+      },
+      message: (props) => `${props.value} Пароль должен быть без пробелов`,
+    },
   },
 
 });

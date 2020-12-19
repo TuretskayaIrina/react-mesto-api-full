@@ -4,7 +4,7 @@ const NotFoundError = require('../errors/not-found-err');
 const ForbiddenError = require('../errors/forbidden-error');
 
 // возвращает все карточки
-const getAllCards = (req, res, next) => Card.find({})
+const getAllCards = (req, res, next) => Card.find({}).populate('owner').populate('likes')
   .then((cards) => {
     res.send((cards));
   })
@@ -16,7 +16,7 @@ const postCard = (req, res, next) => {
   const { _id: userId } = req.user;
   Card.create({ name, link, owner: userId })
     .then((card) => {
-      res.send((card));
+      Card.findOne({ _id: card._id }).populate('owner').then((result) => res.json(result));
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -29,18 +29,23 @@ const postCard = (req, res, next) => {
 // удаляет карточку по id
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(new NotFoundError(`Карточка с id ${req.params.cardId} не существует`))
-
+    .populate('owner')
     .then((card) => {
-      if (card.owner.toString() !== req.user._id) {
+      if (!card) {
+        throw new NotFoundError(`Карточка с id ${req.params.cardId} не существует`);
+      }
+      // eslint-disable-next-line eqeqeq
+      if (req.user._id == card.owner._id) {
+        Card.findByIdAndRemove(req.params.cardId)
+          .then((result) => {
+            res.json(result);
+          })
+          .catch((err) => next(err));
+      } else {
         throw new ForbiddenError('Недостаточно прав');
       }
-
-      card.remove()
-        .then(() => res.status(200).send({ message: 'Карточка удалена' }));
     })
-
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 // поставить лайк карточке
@@ -51,6 +56,7 @@ const addLike = (req, res, next) => {
     { new: true },
   )
     .orFail(new NotFoundError('Нет карточки с таким id'))
+    .populate('likes').populate('owner')
     .then((data) => {
       res.send((data));
     })
@@ -65,6 +71,7 @@ const deleteLike = (req, res, next) => {
     { new: true },
   )
     .orFail(new NotFoundError('Нет карточки с таким id'))
+    .populate('likes').populate('owner')
     .then((data) => {
       res.send((data));
     })
